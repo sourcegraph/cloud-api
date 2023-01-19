@@ -1,0 +1,4 @@
+./server
+.env.*
+bin
+.idea

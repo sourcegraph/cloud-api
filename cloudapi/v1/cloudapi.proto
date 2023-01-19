@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package cloudapi.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/sourcegraph/cloud-api/go/cloudapi/v1;cloudapiv1";
+
+message ListInstancesRequest {}
+
+message ListInstancesResponse {
+  repeated Instance instances = 1;
+  InstanceDrift drift = 2;
+}
+
+message Instance {
+  string id = 1;
+  string project_name = 2;
+  string type = 3;
+  oneof repo_details {
+    V1RepoDetails v1_repo_details = 4;
+    V2RepoDetails v2_repo_details = 5;
+  }
+  ProjectDetails project_details = 6;
+}
+
+message InstanceDrift {
+  repeated Instance only_repo = 1;
+  repeated Instance only_project = 2;
+}
+
+message ProjectDetails {
+  string project_id = 1;
+  string email_domain = 2;
+  string instance_type = 3;
+  bool is_deleted = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+message V1RepoDetails {
+  string customer = 1;
+  string email_domain = 2;
+  string endpoint = 3;
+  string instance_type = 4;
+  string type = 5;
+  bool disable_managed_smtp = 6;
+  bool disable_sourcegraph_management_access = 7;
+}
+
+message V2RepoDetails {}
+
+service InstanceService {
+  rpc ListInstances(ListInstancesRequest) returns (ListInstancesResponse) {}
+}
