@@ -12,6 +12,7 @@ jobs:
           go-version: '1.19.3'
           cache: true
 
+      - run: make build
       - run: make fmt
       - name: Verify no changes
         run: |
