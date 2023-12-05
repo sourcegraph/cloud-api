@@ -11,7 +11,7 @@ import (
 	"github.com/sourcegraph/cloud-api/go/cloudapi/v1/cloudapiv1connect"
 	"google.golang.org/api/idtoken"
 
-	"github.com/bufbuild/connect-go"
+	"connectrpc.com/connect"
 )
 
 func main() {

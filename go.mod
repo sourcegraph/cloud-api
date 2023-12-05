@@ -3,12 +3,12 @@ module github.com/sourcegraph/cloud-api
 go 1.18
 
 require (
+	connectrpc.com/connect v1.12.0
 	github.com/bufbuild/buf v1.12.0
-	github.com/bufbuild/connect-go v1.4.1
 	github.com/fullstorydev/grpcurl v1.8.7
 	google.golang.org/api v0.102.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.2.0
-	google.golang.org/protobuf v1.28.2-0.20220831092852-f930b1dc76e8
+	google.golang.org/protobuf v1.31.0
 )
 
 require (
@@ -16,6 +16,7 @@ require (
 	cloud.google.com/go/compute/metadata v0.2.1 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/Microsoft/go-winio v0.6.0 // indirect
+	github.com/bufbuild/connect-go v1.4.1 // indirect
 	github.com/bufbuild/protocompile v0.1.0 // indirect
 	github.com/census-instrumentation/opencensus-proto v0.2.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect

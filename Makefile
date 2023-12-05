@@ -20,7 +20,7 @@ generate: tools
 # dependencies correctly.
 tools:
 	go install github.com/bufbuild/buf/cmd/buf
-	go install github.com/bufbuild/connect-go/cmd/protoc-gen-connect-go
+	go install connectrpc.com/connect/cmd/protoc-gen-connect-go
 	go install google.golang.org/protobuf/cmd/protoc-gen-go
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
