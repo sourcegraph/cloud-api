@@ -61,6 +61,6 @@ message CreateOrUpdateInstanceRequest {
 }
 
 message CreateOrUpdateInstanceResponse {
-  Instance instances = 1;
+  Instance instance = 1;
   string create_id = 2;
 }
