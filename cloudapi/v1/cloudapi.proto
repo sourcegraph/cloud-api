@@ -51,15 +51,16 @@ message V2RepoDetails {}
 
 service InstanceService {
   rpc ListInstances(ListInstancesRequest) returns (ListInstancesResponse) {}
-  rpc CreateInstance(CreateInstanceRequest) returns (CreateInstanceResponse) {}
+  rpc CreateOrUpdateInstance(CreateOrUpdateInstanceRequest) returns (CreateOrUpdateInstanceResponse) {}
 }
 
 // cloud deploy my branch part
-message CreateInstanceRequest {
+message CreateOrUpdateInstanceRequest {
   string branch_name = 1;
   string admin_email = 2;
 }
 
-message CreateInstanceResponse {
-  repeated Instance instances = 1;
+message CreateOrUpdateInstanceResponse {
+  Instance instances = 1;
+  string create_id = 2;
 }
