@@ -8,7 +8,8 @@ option go_package = "github.com/sourcegraph/cloud-api/go/cloudapi/v1;cloudapiv1"
 
 message ListInstancesRequest {
   string slug = 1;
-  bool with_tasks = 2;
+  string status = 2;
+  bool with_tasks = 3;
 }
 
 message ListInstancesResponse {
