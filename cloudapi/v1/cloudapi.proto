@@ -6,7 +6,10 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/sourcegraph/cloud-api/go/cloudapi/v1;cloudapiv1";
 
-message ListInstancesRequest {}
+message ListInstancesRequest {
+  string slug = 1;
+  bool with_tasks = 2;
+}
 
 message ListInstancesResponse {
   repeated Instance instances = 1;
@@ -22,6 +25,8 @@ message Instance {
     V2RepoDetails v2_repo_details = 5;
   }
   ProjectDetails project_details = 6;
+  string status = 7;
+  repeated TaskDetails task_details = 8;
 }
 
 message InstanceDrift {
@@ -48,6 +53,13 @@ message V1RepoDetails {
 }
 
 message V2RepoDetails {}
+
+message TaskDetails {
+  string name = 1;
+  string type = 2;
+  string condition_type = 3;
+  string condition_status = 4;
+}
 
 service InstanceService {
   rpc ListInstances(ListInstancesRequest) returns (ListInstancesResponse) {}
