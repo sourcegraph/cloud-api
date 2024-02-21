@@ -50,7 +50,7 @@ service InstanceService {
 
 // cloud deploy my branch part
 message CreateOrUpdateInstanceRequest {
-  string branch_name = 1;
+  string slug = 1;
   string admin_email = 2;
 }
 
