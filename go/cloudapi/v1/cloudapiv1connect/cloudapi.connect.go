@@ -39,12 +39,16 @@ const (
 	// InstanceServiceCreateOrUpdateInstanceProcedure is the fully-qualified name of the
 	// InstanceService's CreateOrUpdateInstance RPC.
 	InstanceServiceCreateOrUpdateInstanceProcedure = "/cloudapi.v1.InstanceService/CreateOrUpdateInstance"
+	// InstanceServiceGetInstanceProcedure is the fully-qualified name of the InstanceService's
+	// GetInstance RPC.
+	InstanceServiceGetInstanceProcedure = "/cloudapi.v1.InstanceService/GetInstance"
 )
 
 // InstanceServiceClient is a client for the cloudapi.v1.InstanceService service.
 type InstanceServiceClient interface {
 	ListInstances(context.Context, *connect.Request[v1.ListInstancesRequest]) (*connect.Response[v1.ListInstancesResponse], error)
 	CreateOrUpdateInstance(context.Context, *connect.Request[v1.CreateOrUpdateInstanceRequest]) (*connect.Response[v1.CreateOrUpdateInstanceResponse], error)
+	GetInstance(context.Context, *connect.Request[v1.GetInstanceRequest]) (*connect.Response[v1.GetInstanceResponse], error)
 }
 
 // NewInstanceServiceClient constructs a client for the cloudapi.v1.InstanceService service. By
@@ -67,6 +71,11 @@ func NewInstanceServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			baseURL+InstanceServiceCreateOrUpdateInstanceProcedure,
 			opts...,
 		),
+		getInstance: connect.NewClient[v1.GetInstanceRequest, v1.GetInstanceResponse](
+			httpClient,
+			baseURL+InstanceServiceGetInstanceProcedure,
+			opts...,
+		),
 	}
 }
 
@@ -74,6 +83,7 @@ func NewInstanceServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 type instanceServiceClient struct {
 	listInstances          *connect.Client[v1.ListInstancesRequest, v1.ListInstancesResponse]
 	createOrUpdateInstance *connect.Client[v1.CreateOrUpdateInstanceRequest, v1.CreateOrUpdateInstanceResponse]
+	getInstance            *connect.Client[v1.GetInstanceRequest, v1.GetInstanceResponse]
 }
 
 // ListInstances calls cloudapi.v1.InstanceService.ListInstances.
@@ -86,10 +96,16 @@ func (c *instanceServiceClient) CreateOrUpdateInstance(ctx context.Context, req 
 	return c.createOrUpdateInstance.CallUnary(ctx, req)
 }
 
+// GetInstance calls cloudapi.v1.InstanceService.GetInstance.
+func (c *instanceServiceClient) GetInstance(ctx context.Context, req *connect.Request[v1.GetInstanceRequest]) (*connect.Response[v1.GetInstanceResponse], error) {
+	return c.getInstance.CallUnary(ctx, req)
+}
+
 // InstanceServiceHandler is an implementation of the cloudapi.v1.InstanceService service.
 type InstanceServiceHandler interface {
 	ListInstances(context.Context, *connect.Request[v1.ListInstancesRequest]) (*connect.Response[v1.ListInstancesResponse], error)
 	CreateOrUpdateInstance(context.Context, *connect.Request[v1.CreateOrUpdateInstanceRequest]) (*connect.Response[v1.CreateOrUpdateInstanceResponse], error)
+	GetInstance(context.Context, *connect.Request[v1.GetInstanceRequest]) (*connect.Response[v1.GetInstanceResponse], error)
 }
 
 // NewInstanceServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -108,12 +124,19 @@ func NewInstanceServiceHandler(svc InstanceServiceHandler, opts ...connect.Handl
 		svc.CreateOrUpdateInstance,
 		opts...,
 	)
+	instanceServiceGetInstanceHandler := connect.NewUnaryHandler(
+		InstanceServiceGetInstanceProcedure,
+		svc.GetInstance,
+		opts...,
+	)
 	return "/cloudapi.v1.InstanceService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case InstanceServiceListInstancesProcedure:
 			instanceServiceListInstancesHandler.ServeHTTP(w, r)
 		case InstanceServiceCreateOrUpdateInstanceProcedure:
 			instanceServiceCreateOrUpdateInstanceHandler.ServeHTTP(w, r)
+		case InstanceServiceGetInstanceProcedure:
+			instanceServiceGetInstanceHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -129,4 +152,8 @@ func (UnimplementedInstanceServiceHandler) ListInstances(context.Context, *conne
 
 func (UnimplementedInstanceServiceHandler) CreateOrUpdateInstance(context.Context, *connect.Request[v1.CreateOrUpdateInstanceRequest]) (*connect.Response[v1.CreateOrUpdateInstanceResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("cloudapi.v1.InstanceService.CreateOrUpdateInstance is not implemented"))
+}
+
+func (UnimplementedInstanceServiceHandler) GetInstance(context.Context, *connect.Request[v1.GetInstanceRequest]) (*connect.Response[v1.GetInstanceResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("cloudapi.v1.InstanceService.GetInstance is not implemented"))
 }
