@@ -6,9 +6,54 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/sourcegraph/cloud-api/go/cloudapi/v1;cloudapiv1";
 
+message Instance {
+  string id = 1;
+  optional string name = 2;
+  optional InstanceDetails details = 3;
+  optional PlatformDetails project_details = 4;
+  optional InstanceState instance_state = 5;
+}
+
+message InstanceDetails {
+  string type = 1;
+  string uri = 2;
+}
+
+message PlatformDetails {
+  string project_id = 1;
+  bool is_deleted = 2;
+  google.protobuf.Timestamp created_at = 3;
+}
+
+enum InstanceStatus {
+  INSTANCE_STATUS_UNSPECIFIED = 0;
+  INSTANCE_STATUS_PROGRESSING = 1;
+  INSTANCE_STATUS_OK = 2;
+  INSTANCE_STATUS_FAILED = 3;
+}
+
+message InstanceState {
+  InstanceStatus instance_status = 1;
+  optional string reason = 2;
+}
+
+service InstanceService {
+  rpc ListInstances(ListInstancesRequest) returns (ListInstancesResponse) {}
+  rpc CreateInstance(CreateInstanceRequest) returns (CreateInstanceResponse) {}
+  rpc UpdateInstance(UpdateInstanceRequest) returns (UpdateInstanceResponse) {}
+  rpc GetInstance(GetInstanceRequest) returns (GetInstanceResponse) {}
+  rpc DeleteInstance(DeleteInstanceRequest) returns (DeleteInstanceResponse) {}
+}
+
+// ListInstances via specific criteria, return all if no criteria specified
 message ListInstancesRequest {
-  string slug = 1;
-  string status = 2;
+  optional InstanceFilter instance_filter = 1;
+}
+
+message InstanceFilter {
+  optional string slug = 1;
+  // instance status from InstanceStatus enum
+  optional string status = 2;
 }
 
 message ListInstancesResponse {
@@ -16,52 +61,46 @@ message ListInstancesResponse {
   InstanceDrift drift = 2;
 }
 
-message Instance {
-  string id = 1;
-  string project_name = 2;
-  string type = 3;
-  ProjectDetails project_details = 4;
-  InstanceDetails instance_details = 5;
-  string status = 6;
-}
-
+// TODO move to instance details?
+// InstanceDrift returns informations about drift between repository and control-plane
 message InstanceDrift {
   repeated Instance only_repo = 1;
   repeated Instance only_project = 2;
 }
 
-message ProjectDetails {
-  string project_id = 1;
-  bool is_deleted = 4;
-  google.protobuf.Timestamp created_at = 5;
-}
-
-message InstanceDetails {
-  string url = 6;
-  string email_domain = 2;
-  string instance_type = 3;
-}
-
-service InstanceService {
-  rpc ListInstances(ListInstancesRequest) returns (ListInstancesResponse) {}
-  rpc CreateOrUpdateInstance(CreateOrUpdateInstanceRequest) returns (CreateOrUpdateInstanceResponse) {}
-  rpc GetInstance(GetInstanceRequest) returns (GetInstanceResponse) {}
-}
-
-// cloud deploy my branch part
-message CreateOrUpdateInstanceRequest {
-  string slug = 1;
-  string admin_email = 2;
-}
-
-message CreateOrUpdateInstanceResponse {
+// create instance
+message CreateInstanceRequest {
   Instance instance = 1;
 }
 
+message CreateInstanceResponse {
+  Instance instance = 1;
+}
+
+// patch instance
+message UpdateInstanceRequest {
+  Instance instance = 1;
+}
+
+message UpdateInstanceResponse {
+  Instance instance = 1;
+}
+
+// get instance by name
 message GetInstanceRequest {
-  string slug = 1;
+  string name = 1;
 }
 
 message GetInstanceResponse {
   Instance instance = 1;
+}
+
+// delete instance by name
+message DeleteInstanceRequest {
+  string name = 1;
+}
+
+message DeleteInstanceResponse {
+  string status = 1;
+  string error = 2;
 }
