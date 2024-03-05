@@ -70,37 +70,52 @@ message InstanceDrift {
 
 // create instance
 message CreateInstanceRequest {
-  Instance instance = 1;
+  string name = 1;
+  string type = 2;
+  optional string environment = 3;
+  optional string version = 4;
+  optional string admin_email = 5;
+  optional string full_domain = 6;
+  optional string license_key = 7;
+  optional string gcp_region = 8;
+  repeated string tags = 9;
 }
 
 message CreateInstanceResponse {
   Instance instance = 1;
+  optional string error = 2;
 }
 
-// patch instance
+/**
+   patch instance
+   https://google.aip.dev/134#patch-and-put
+   **/
 message UpdateInstanceRequest {
   Instance instance = 1;
 }
 
 message UpdateInstanceResponse {
   Instance instance = 1;
+  optional string error = 2;
 }
 
-// get instance by name
+// get instance by any field
 message GetInstanceRequest {
-  string name = 1;
+  Instance instance = 1;
 }
 
 message GetInstanceResponse {
   Instance instance = 1;
+  optional string error = 2;
 }
 
-// delete instance by name
+// delete instance
 message DeleteInstanceRequest {
-  string name = 1;
+  Instance instance = 1;
 }
 
 message DeleteInstanceResponse {
+  // status of the delete operation
   string status = 1;
-  string error = 2;
+  optional string error = 2;
 }
