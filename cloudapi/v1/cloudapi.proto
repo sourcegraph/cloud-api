@@ -9,7 +9,7 @@ option go_package = "github.com/sourcegraph/cloud-api/go/cloudapi/v1;cloudapiv1"
 message Instance {
   string id = 1;
   optional InstanceDetails instance_details = 2;
-  optional PlatformDetails project_details = 3;
+  optional PlatformDetails platform_details = 3;
   optional InstanceState instance_state = 4;
 }
 
