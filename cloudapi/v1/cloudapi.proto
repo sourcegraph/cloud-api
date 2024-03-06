@@ -13,21 +13,29 @@ message Instance {
   optional InstanceState instance_state = 4;
 }
 
+enum InstanceType {
+  INSTANCE_TYPE_UNSPECIFIED = 0;
+  INSTANCE_TYPE_INTERNAL = 1;
+  INSTANCE_TYPE_TRIAL = 2;
+  INSTANCE_TYPE_PRODUCTION = 3;
+  INSTANCE_TYPE_EPHEMERAL = 4;
+}
+
 message InstanceDetails {
   string name = 1;
-  string type = 2;
+  InstanceType instance_type = 2;
   string environment = 3;
   string version = 4;
-  optional string full_domain = 5;
+  optional string hostname = 5;
   optional string admin_email = 6;
   repeated string tags = 7;
 }
 
 message PlatformDetails {
-  string project_id = 1;
-  string gcp_region = 2;
-  bool is_deleted = 3;
-  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp created_at = 1;
+  string gcp_project_id = 2;
+  string gcp_region = 3;
+  optional google.protobuf.Timestamp deleted_at = 4;
 }
 
 enum InstanceStatus {
@@ -56,9 +64,13 @@ message ListInstancesRequest {
 }
 
 message InstanceFilter {
-  optional string slug = 1;
+  optional string name = 1;
+  optional string environment = 2;
   // instance status from InstanceStatus enum
-  optional string status = 2;
+  optional string status = 3;
+  optional string version = 4;
+  optional string hostname = 5;
+  optional string admin_email = 6;
 }
 
 message ListInstancesResponse {
@@ -80,7 +92,7 @@ message CreateInstanceRequest {
   optional string environment = 3;
   optional string version = 4;
   optional string admin_email = 5;
-  optional string full_domain = 6;
+  optional string hostname = 6;
   optional string license_key = 7;
   optional string gcp_region = 8;
   repeated string tags = 9;
@@ -104,9 +116,18 @@ message UpdateInstanceResponse {
   optional string error = 2;
 }
 
+message InstanceNameAndEnvironmentQuery {
+  string name = 1;
+  string environment = 2;
+}
+
 // get instance by any field
 message GetInstanceRequest {
-  Instance instance = 1;
+  oneof identifier {
+    string id = 1;
+    InstanceNameAndEnvironmentQuery instance_name_and_environment = 2;
+    string hostname = 3;
+  }
 }
 
 message GetInstanceResponse {
