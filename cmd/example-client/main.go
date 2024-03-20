@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"os"
 
-	cloudapiv1 "github.com/sourcegraph/cloud-api/go/cloudapi/v1"
-	"github.com/sourcegraph/cloud-api/go/cloudapi/v1/cloudapiv1connect"
+	"connectrpc.com/connect"
 	"google.golang.org/api/idtoken"
 
-	"connectrpc.com/connect"
+	cloudapiv1 "github.com/sourcegraph/cloud-api/go/cloudapi/v1"
+	"github.com/sourcegraph/cloud-api/go/cloudapi/v1/cloudapiv1connect"
 )
 
 func main() {

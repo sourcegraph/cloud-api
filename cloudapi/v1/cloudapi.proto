@@ -28,7 +28,10 @@ message InstanceDetails {
   string version = 4;
   optional string hostname = 5;
   optional string admin_email = 6;
-  repeated string tags = 7;
+  // instance_features requires infrastructure changes i.e. enable cody, enable nat, ephemeral instance
+  map<string, string> instance_features = 7;
+  // application_features
+  map<string, string> application_features = 8;
 }
 
 message PlatformDetails {
@@ -88,14 +91,17 @@ message InstanceDrift {
 // create instance
 message CreateInstanceRequest {
   string name = 1;
-  string type = 2;
+  InstanceType instance_type = 2;
   optional string environment = 3;
   optional string version = 4;
   optional string admin_email = 5;
   optional string hostname = 6;
   optional string license_key = 7;
   optional string gcp_region = 8;
-  repeated string tags = 9;
+  // instance_features requires infrastructure changes i.e. enable cody, enable nat, ephemeral instance
+  map<string, string> instance_features = 9;
+  // application_features
+  map<string, string> application_features = 10;
 }
 
 message CreateInstanceResponse {
