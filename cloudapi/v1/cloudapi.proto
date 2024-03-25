@@ -100,13 +100,12 @@ message CreateInstanceRequest {
   optional string gcp_region = 8;
   // instance_features requires infrastructure changes i.e. enable cody, enable nat, ephemeral instance
   map<string, string> instance_features = 9;
-  // application_features
-  map<string, string> application_features = 10;
+  // feature_flags for application
+  map<string, string> feature_flags = 10;
 }
 
 message CreateInstanceResponse {
   Instance instance = 1;
-  optional string error = 2;
 }
 
 /**
@@ -119,26 +118,16 @@ message UpdateInstanceRequest {
 
 message UpdateInstanceResponse {
   Instance instance = 1;
-  optional string error = 2;
 }
 
-message InstanceNameAndEnvironmentQuery {
+// get instance by name and environment
+message GetInstanceRequest {
   string name = 1;
   string environment = 2;
 }
 
-// get instance by any field
-message GetInstanceRequest {
-  oneof identifier {
-    string id = 1;
-    InstanceNameAndEnvironmentQuery instance_name_and_environment = 2;
-    string hostname = 3;
-  }
-}
-
 message GetInstanceResponse {
   Instance instance = 1;
-  optional string error = 2;
 }
 
 // delete instance
@@ -149,5 +138,4 @@ message DeleteInstanceRequest {
 message DeleteInstanceResponse {
   // status of the delete operation
   string status = 1;
-  optional string error = 2;
 }
