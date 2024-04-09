@@ -56,7 +56,9 @@ message InstanceState {
 service InstanceService {
   rpc ListInstances(ListInstancesRequest) returns (ListInstancesResponse) {}
   rpc CreateInstance(CreateInstanceRequest) returns (CreateInstanceResponse) {}
-  rpc UpdateInstance(UpdateInstanceRequest) returns (UpdateInstanceResponse) {}
+  rpc UpdateInstanceVersion(UpdateInstanceVersionRequest) returns (UpdateInstanceVersionResponse) {}
+  rpc UpdateInstanceLease(UpdateInstanceLeaseRequest) returns (UpdateInstanceLeaseResponse) {}
+  rpc UpdateInstanceFeatures(UpdateInstanceFeaturesRequest) returns (UpdateInstanceFeaturesResponse) {}
   rpc GetInstance(GetInstanceRequest) returns (GetInstanceResponse) {}
   rpc DeleteInstance(DeleteInstanceRequest) returns (DeleteInstanceResponse) {}
 }
@@ -109,14 +111,36 @@ message CreateInstanceResponse {
 }
 
 /**
-   patch instance
-   https://google.aip.dev/134#patch-and-put
+      patch instance
+      https://google.aip.dev/134#patch-and-put
    **/
-message UpdateInstanceRequest {
+message UpdateInstanceVersionRequest {
+  string name = 1;
+  string environment = 2;
+  string version = 3;
+}
+
+message UpdateInstanceVersionResponse {
   Instance instance = 1;
 }
 
-message UpdateInstanceResponse {
+message UpdateInstanceLeaseRequest {
+  string name = 1;
+  string environment = 2;
+  google.protobuf.Timestamp lease = 3;
+}
+
+message UpdateInstanceLeaseResponse {
+  Instance instance = 1;
+}
+
+message UpdateInstanceFeaturesRequest {
+  string name = 1;
+  string environment = 2;
+  map<string, string> application_features = 3;
+}
+
+message UpdateInstanceFeaturesResponse {
   Instance instance = 1;
 }
 
@@ -132,7 +156,8 @@ message GetInstanceResponse {
 
 // delete instance
 message DeleteInstanceRequest {
-  Instance instance = 1;
+  string name = 1;
+  string environment = 2;
 }
 
 message DeleteInstanceResponse {

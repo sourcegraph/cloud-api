@@ -39,9 +39,15 @@ const (
 	// InstanceServiceCreateInstanceProcedure is the fully-qualified name of the InstanceService's
 	// CreateInstance RPC.
 	InstanceServiceCreateInstanceProcedure = "/cloudapi.v1.InstanceService/CreateInstance"
-	// InstanceServiceUpdateInstanceProcedure is the fully-qualified name of the InstanceService's
-	// UpdateInstance RPC.
-	InstanceServiceUpdateInstanceProcedure = "/cloudapi.v1.InstanceService/UpdateInstance"
+	// InstanceServiceUpdateInstanceVersionProcedure is the fully-qualified name of the
+	// InstanceService's UpdateInstanceVersion RPC.
+	InstanceServiceUpdateInstanceVersionProcedure = "/cloudapi.v1.InstanceService/UpdateInstanceVersion"
+	// InstanceServiceUpdateInstanceLeaseProcedure is the fully-qualified name of the InstanceService's
+	// UpdateInstanceLease RPC.
+	InstanceServiceUpdateInstanceLeaseProcedure = "/cloudapi.v1.InstanceService/UpdateInstanceLease"
+	// InstanceServiceUpdateInstanceFeaturesProcedure is the fully-qualified name of the
+	// InstanceService's UpdateInstanceFeatures RPC.
+	InstanceServiceUpdateInstanceFeaturesProcedure = "/cloudapi.v1.InstanceService/UpdateInstanceFeatures"
 	// InstanceServiceGetInstanceProcedure is the fully-qualified name of the InstanceService's
 	// GetInstance RPC.
 	InstanceServiceGetInstanceProcedure = "/cloudapi.v1.InstanceService/GetInstance"
@@ -54,7 +60,9 @@ const (
 type InstanceServiceClient interface {
 	ListInstances(context.Context, *connect.Request[v1.ListInstancesRequest]) (*connect.Response[v1.ListInstancesResponse], error)
 	CreateInstance(context.Context, *connect.Request[v1.CreateInstanceRequest]) (*connect.Response[v1.CreateInstanceResponse], error)
-	UpdateInstance(context.Context, *connect.Request[v1.UpdateInstanceRequest]) (*connect.Response[v1.UpdateInstanceResponse], error)
+	UpdateInstanceVersion(context.Context, *connect.Request[v1.UpdateInstanceVersionRequest]) (*connect.Response[v1.UpdateInstanceVersionResponse], error)
+	UpdateInstanceLease(context.Context, *connect.Request[v1.UpdateInstanceLeaseRequest]) (*connect.Response[v1.UpdateInstanceLeaseResponse], error)
+	UpdateInstanceFeatures(context.Context, *connect.Request[v1.UpdateInstanceFeaturesRequest]) (*connect.Response[v1.UpdateInstanceFeaturesResponse], error)
 	GetInstance(context.Context, *connect.Request[v1.GetInstanceRequest]) (*connect.Response[v1.GetInstanceResponse], error)
 	DeleteInstance(context.Context, *connect.Request[v1.DeleteInstanceRequest]) (*connect.Response[v1.DeleteInstanceResponse], error)
 }
@@ -79,9 +87,19 @@ func NewInstanceServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			baseURL+InstanceServiceCreateInstanceProcedure,
 			opts...,
 		),
-		updateInstance: connect.NewClient[v1.UpdateInstanceRequest, v1.UpdateInstanceResponse](
+		updateInstanceVersion: connect.NewClient[v1.UpdateInstanceVersionRequest, v1.UpdateInstanceVersionResponse](
 			httpClient,
-			baseURL+InstanceServiceUpdateInstanceProcedure,
+			baseURL+InstanceServiceUpdateInstanceVersionProcedure,
+			opts...,
+		),
+		updateInstanceLease: connect.NewClient[v1.UpdateInstanceLeaseRequest, v1.UpdateInstanceLeaseResponse](
+			httpClient,
+			baseURL+InstanceServiceUpdateInstanceLeaseProcedure,
+			opts...,
+		),
+		updateInstanceFeatures: connect.NewClient[v1.UpdateInstanceFeaturesRequest, v1.UpdateInstanceFeaturesResponse](
+			httpClient,
+			baseURL+InstanceServiceUpdateInstanceFeaturesProcedure,
 			opts...,
 		),
 		getInstance: connect.NewClient[v1.GetInstanceRequest, v1.GetInstanceResponse](
@@ -99,11 +117,13 @@ func NewInstanceServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 
 // instanceServiceClient implements InstanceServiceClient.
 type instanceServiceClient struct {
-	listInstances  *connect.Client[v1.ListInstancesRequest, v1.ListInstancesResponse]
-	createInstance *connect.Client[v1.CreateInstanceRequest, v1.CreateInstanceResponse]
-	updateInstance *connect.Client[v1.UpdateInstanceRequest, v1.UpdateInstanceResponse]
-	getInstance    *connect.Client[v1.GetInstanceRequest, v1.GetInstanceResponse]
-	deleteInstance *connect.Client[v1.DeleteInstanceRequest, v1.DeleteInstanceResponse]
+	listInstances          *connect.Client[v1.ListInstancesRequest, v1.ListInstancesResponse]
+	createInstance         *connect.Client[v1.CreateInstanceRequest, v1.CreateInstanceResponse]
+	updateInstanceVersion  *connect.Client[v1.UpdateInstanceVersionRequest, v1.UpdateInstanceVersionResponse]
+	updateInstanceLease    *connect.Client[v1.UpdateInstanceLeaseRequest, v1.UpdateInstanceLeaseResponse]
+	updateInstanceFeatures *connect.Client[v1.UpdateInstanceFeaturesRequest, v1.UpdateInstanceFeaturesResponse]
+	getInstance            *connect.Client[v1.GetInstanceRequest, v1.GetInstanceResponse]
+	deleteInstance         *connect.Client[v1.DeleteInstanceRequest, v1.DeleteInstanceResponse]
 }
 
 // ListInstances calls cloudapi.v1.InstanceService.ListInstances.
@@ -116,9 +136,19 @@ func (c *instanceServiceClient) CreateInstance(ctx context.Context, req *connect
 	return c.createInstance.CallUnary(ctx, req)
 }
 
-// UpdateInstance calls cloudapi.v1.InstanceService.UpdateInstance.
-func (c *instanceServiceClient) UpdateInstance(ctx context.Context, req *connect.Request[v1.UpdateInstanceRequest]) (*connect.Response[v1.UpdateInstanceResponse], error) {
-	return c.updateInstance.CallUnary(ctx, req)
+// UpdateInstanceVersion calls cloudapi.v1.InstanceService.UpdateInstanceVersion.
+func (c *instanceServiceClient) UpdateInstanceVersion(ctx context.Context, req *connect.Request[v1.UpdateInstanceVersionRequest]) (*connect.Response[v1.UpdateInstanceVersionResponse], error) {
+	return c.updateInstanceVersion.CallUnary(ctx, req)
+}
+
+// UpdateInstanceLease calls cloudapi.v1.InstanceService.UpdateInstanceLease.
+func (c *instanceServiceClient) UpdateInstanceLease(ctx context.Context, req *connect.Request[v1.UpdateInstanceLeaseRequest]) (*connect.Response[v1.UpdateInstanceLeaseResponse], error) {
+	return c.updateInstanceLease.CallUnary(ctx, req)
+}
+
+// UpdateInstanceFeatures calls cloudapi.v1.InstanceService.UpdateInstanceFeatures.
+func (c *instanceServiceClient) UpdateInstanceFeatures(ctx context.Context, req *connect.Request[v1.UpdateInstanceFeaturesRequest]) (*connect.Response[v1.UpdateInstanceFeaturesResponse], error) {
+	return c.updateInstanceFeatures.CallUnary(ctx, req)
 }
 
 // GetInstance calls cloudapi.v1.InstanceService.GetInstance.
@@ -135,7 +165,9 @@ func (c *instanceServiceClient) DeleteInstance(ctx context.Context, req *connect
 type InstanceServiceHandler interface {
 	ListInstances(context.Context, *connect.Request[v1.ListInstancesRequest]) (*connect.Response[v1.ListInstancesResponse], error)
 	CreateInstance(context.Context, *connect.Request[v1.CreateInstanceRequest]) (*connect.Response[v1.CreateInstanceResponse], error)
-	UpdateInstance(context.Context, *connect.Request[v1.UpdateInstanceRequest]) (*connect.Response[v1.UpdateInstanceResponse], error)
+	UpdateInstanceVersion(context.Context, *connect.Request[v1.UpdateInstanceVersionRequest]) (*connect.Response[v1.UpdateInstanceVersionResponse], error)
+	UpdateInstanceLease(context.Context, *connect.Request[v1.UpdateInstanceLeaseRequest]) (*connect.Response[v1.UpdateInstanceLeaseResponse], error)
+	UpdateInstanceFeatures(context.Context, *connect.Request[v1.UpdateInstanceFeaturesRequest]) (*connect.Response[v1.UpdateInstanceFeaturesResponse], error)
 	GetInstance(context.Context, *connect.Request[v1.GetInstanceRequest]) (*connect.Response[v1.GetInstanceResponse], error)
 	DeleteInstance(context.Context, *connect.Request[v1.DeleteInstanceRequest]) (*connect.Response[v1.DeleteInstanceResponse], error)
 }
@@ -156,9 +188,19 @@ func NewInstanceServiceHandler(svc InstanceServiceHandler, opts ...connect.Handl
 		svc.CreateInstance,
 		opts...,
 	)
-	instanceServiceUpdateInstanceHandler := connect.NewUnaryHandler(
-		InstanceServiceUpdateInstanceProcedure,
-		svc.UpdateInstance,
+	instanceServiceUpdateInstanceVersionHandler := connect.NewUnaryHandler(
+		InstanceServiceUpdateInstanceVersionProcedure,
+		svc.UpdateInstanceVersion,
+		opts...,
+	)
+	instanceServiceUpdateInstanceLeaseHandler := connect.NewUnaryHandler(
+		InstanceServiceUpdateInstanceLeaseProcedure,
+		svc.UpdateInstanceLease,
+		opts...,
+	)
+	instanceServiceUpdateInstanceFeaturesHandler := connect.NewUnaryHandler(
+		InstanceServiceUpdateInstanceFeaturesProcedure,
+		svc.UpdateInstanceFeatures,
 		opts...,
 	)
 	instanceServiceGetInstanceHandler := connect.NewUnaryHandler(
@@ -177,8 +219,12 @@ func NewInstanceServiceHandler(svc InstanceServiceHandler, opts ...connect.Handl
 			instanceServiceListInstancesHandler.ServeHTTP(w, r)
 		case InstanceServiceCreateInstanceProcedure:
 			instanceServiceCreateInstanceHandler.ServeHTTP(w, r)
-		case InstanceServiceUpdateInstanceProcedure:
-			instanceServiceUpdateInstanceHandler.ServeHTTP(w, r)
+		case InstanceServiceUpdateInstanceVersionProcedure:
+			instanceServiceUpdateInstanceVersionHandler.ServeHTTP(w, r)
+		case InstanceServiceUpdateInstanceLeaseProcedure:
+			instanceServiceUpdateInstanceLeaseHandler.ServeHTTP(w, r)
+		case InstanceServiceUpdateInstanceFeaturesProcedure:
+			instanceServiceUpdateInstanceFeaturesHandler.ServeHTTP(w, r)
 		case InstanceServiceGetInstanceProcedure:
 			instanceServiceGetInstanceHandler.ServeHTTP(w, r)
 		case InstanceServiceDeleteInstanceProcedure:
@@ -200,8 +246,16 @@ func (UnimplementedInstanceServiceHandler) CreateInstance(context.Context, *conn
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("cloudapi.v1.InstanceService.CreateInstance is not implemented"))
 }
 
-func (UnimplementedInstanceServiceHandler) UpdateInstance(context.Context, *connect.Request[v1.UpdateInstanceRequest]) (*connect.Response[v1.UpdateInstanceResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("cloudapi.v1.InstanceService.UpdateInstance is not implemented"))
+func (UnimplementedInstanceServiceHandler) UpdateInstanceVersion(context.Context, *connect.Request[v1.UpdateInstanceVersionRequest]) (*connect.Response[v1.UpdateInstanceVersionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("cloudapi.v1.InstanceService.UpdateInstanceVersion is not implemented"))
+}
+
+func (UnimplementedInstanceServiceHandler) UpdateInstanceLease(context.Context, *connect.Request[v1.UpdateInstanceLeaseRequest]) (*connect.Response[v1.UpdateInstanceLeaseResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("cloudapi.v1.InstanceService.UpdateInstanceLease is not implemented"))
+}
+
+func (UnimplementedInstanceServiceHandler) UpdateInstanceFeatures(context.Context, *connect.Request[v1.UpdateInstanceFeaturesRequest]) (*connect.Response[v1.UpdateInstanceFeaturesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("cloudapi.v1.InstanceService.UpdateInstanceFeatures is not implemented"))
 }
 
 func (UnimplementedInstanceServiceHandler) GetInstance(context.Context, *connect.Request[v1.GetInstanceRequest]) (*connect.Response[v1.GetInstanceResponse], error) {
