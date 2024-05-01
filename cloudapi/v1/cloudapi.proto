@@ -26,7 +26,7 @@ message InstanceDetails {
   InstanceType instance_type = 2;
   string environment = 3;
   string version = 4;
-  optional string hostname = 5;
+  optional string url = 5;
   optional string admin_email = 6;
   // instance_features requires infrastructure changes i.e. enable cody, enable nat, ephemeral instance
   map<string, string> instance_features = 7;
@@ -72,7 +72,7 @@ message InstanceFilter {
   // instance status from InstanceStatus enum
   optional string status = 3;
   optional string version = 4;
-  optional string hostname = 5;
+  optional string url = 5;
   optional string admin_email = 6;
 }
 
@@ -95,7 +95,7 @@ message CreateInstanceRequest {
   optional string environment = 3;
   optional string version = 4;
   optional string admin_email = 5;
-  optional string hostname = 6;
+  optional string url = 6;
   optional string license_key = 7;
   optional string gcp_region = 8;
   // instance_features requires infrastructure changes i.e. enable cody, enable nat, ephemeral instance
