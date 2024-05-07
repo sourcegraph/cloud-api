@@ -6,49 +6,157 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/sourcegraph/cloud-api/go/cloudapi/v1;cloudapiv1";
 
-message ListInstancesRequest {}
+message Instance {
+  string id = 1;
+  optional InstanceDetails instance_details = 2;
+  optional PlatformDetails platform_details = 3;
+  optional InstanceState instance_state = 4;
+}
+
+enum InstanceType {
+  INSTANCE_TYPE_UNSPECIFIED = 0;
+  INSTANCE_TYPE_INTERNAL = 1;
+  INSTANCE_TYPE_TRIAL = 2;
+  INSTANCE_TYPE_PRODUCTION = 3;
+  INSTANCE_TYPE_EPHEMERAL = 4;
+}
+
+message InstanceDetails {
+  string name = 1;
+  InstanceType instance_type = 2;
+  string environment = 3;
+  string version = 4;
+  optional string url = 5;
+  optional string admin_email = 6;
+  // instance_features requires infrastructure changes i.e. enable cody, enable nat, ephemeral instance
+  map<string, string> instance_features = 7;
+}
+
+message PlatformDetails {
+  google.protobuf.Timestamp created_at = 1;
+  string gcp_project_id = 2;
+  string gcp_region = 3;
+  optional google.protobuf.Timestamp deleted_at = 4;
+}
+
+enum InstanceStatus {
+  INSTANCE_STATUS_UNSPECIFIED = 0;
+  INSTANCE_STATUS_PROGRESSING = 1;
+  INSTANCE_STATUS_OK = 2;
+  INSTANCE_STATUS_FAILED = 3;
+}
+
+message InstanceState {
+  InstanceStatus instance_status = 1;
+  optional string reason = 2;
+}
+
+service InstanceService {
+  rpc ListInstances(ListInstancesRequest) returns (ListInstancesResponse) {}
+  rpc CreateInstance(CreateInstanceRequest) returns (CreateInstanceResponse) {}
+  rpc UpdateInstanceVersion(UpdateInstanceVersionRequest) returns (UpdateInstanceVersionResponse) {}
+  rpc UpdateInstanceLease(UpdateInstanceLeaseRequest) returns (UpdateInstanceLeaseResponse) {}
+  rpc UpdateInstanceFeatures(UpdateInstanceFeaturesRequest) returns (UpdateInstanceFeaturesResponse) {}
+  rpc GetInstance(GetInstanceRequest) returns (GetInstanceResponse) {}
+  rpc DeleteInstance(DeleteInstanceRequest) returns (DeleteInstanceResponse) {}
+}
+
+// ListInstances via specific criteria, return all if no criteria specified
+message ListInstancesRequest {
+  optional InstanceFilter instance_filter = 1;
+}
+
+message InstanceFilter {
+  optional string name = 1;
+  optional string environment = 2;
+  // instance status from InstanceStatus enum
+  optional string status = 3;
+  optional string version = 4;
+  optional string url = 5;
+  optional string admin_email = 6;
+}
 
 message ListInstancesResponse {
   repeated Instance instances = 1;
   InstanceDrift drift = 2;
 }
 
-message Instance {
-  string id = 1;
-  string project_name = 2;
-  string type = 3;
-  oneof repo_details {
-    V1RepoDetails v1_repo_details = 4;
-    V2RepoDetails v2_repo_details = 5;
-  }
-  ProjectDetails project_details = 6;
-}
-
+// TODO move to instance details?
+// InstanceDrift returns informations about drift between repository and control-plane
 message InstanceDrift {
   repeated Instance only_repo = 1;
   repeated Instance only_project = 2;
 }
 
-message ProjectDetails {
-  string project_id = 1;
-  string email_domain = 2;
-  string instance_type = 3;
-  bool is_deleted = 4;
-  google.protobuf.Timestamp created_at = 5;
+// create instance
+message CreateInstanceRequest {
+  string name = 1;
+  InstanceType instance_type = 2;
+  optional string environment = 3;
+  optional string version = 4;
+  optional string admin_email = 5;
+  optional string url = 6;
+  optional string license_key = 7;
+  optional string gcp_region = 8;
+  // instance_features requires infrastructure changes i.e. enable cody, enable nat, ephemeral instance
+  map<string, string> instance_features = 9;
 }
 
-message V1RepoDetails {
-  string customer = 1;
-  string email_domain = 2;
-  string endpoint = 3;
-  string instance_type = 4;
-  string type = 5;
-  bool disable_managed_smtp = 6;
-  bool disable_sourcegraph_management_access = 7;
+message CreateInstanceResponse {
+  Instance instance = 1;
 }
 
-message V2RepoDetails {}
+/**
+      patch instance
+      https://google.aip.dev/134#patch-and-put
+   **/
+message UpdateInstanceVersionRequest {
+  string name = 1;
+  string environment = 2;
+  string version = 3;
+}
 
-service InstanceService {
-  rpc ListInstances(ListInstancesRequest) returns (ListInstancesResponse) {}
+message UpdateInstanceVersionResponse {
+  Instance instance = 1;
+}
+
+message UpdateInstanceLeaseRequest {
+  string name = 1;
+  string environment = 2;
+  google.protobuf.Timestamp lease = 3;
+}
+
+message UpdateInstanceLeaseResponse {
+  Instance instance = 1;
+}
+
+message UpdateInstanceFeaturesRequest {
+  string name = 1;
+  string environment = 2;
+  map<string, string> instance_features = 3;
+}
+
+message UpdateInstanceFeaturesResponse {
+  Instance instance = 1;
+}
+
+// get instance by name and environment
+message GetInstanceRequest {
+  string name = 1;
+  string environment = 2;
+}
+
+message GetInstanceResponse {
+  Instance instance = 1;
+}
+
+// delete instance
+message DeleteInstanceRequest {
+  string name = 1;
+  string environment = 2;
+}
+
+message DeleteInstanceResponse {
+  // status of the delete operation
+  string status = 1;
 }
